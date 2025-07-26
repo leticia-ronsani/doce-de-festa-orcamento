@@ -21,6 +21,10 @@ def carregar_dados(caminho):
 def salvar_dados(df, caminho):
     df.to_csv(caminho, index=False)
 
+# Função para limpar texto e evitar erros de encoding no PDF
+def limpa_texto(texto):
+    return texto.encode('latin-1', 'replace').decode('latin-1')
+
 # Menu lateral
 menu = st.sidebar.radio("📂 Menu", ["Cadastrar Cliente", "Cadastrar Material", "Gerar Orçamento"])
 
@@ -29,7 +33,6 @@ if menu == "Cadastrar Cliente":
     st.subheader("📋 Cadastro de Cliente")
     nome = st.text_input("Nome completo")
     telefone = st.text_input("Telefone")
-    CPF = st.text_input("CPF")
     email = st.text_input("E-mail")
 
     if st.button("Salvar Cliente"):
@@ -105,33 +108,34 @@ elif menu == "Gerar Orçamento":
                     pdf.image("logo.png", x=10, y=8, w=33)
 
                 pdf.set_font("Arial", "B", 14)
-                pdf.cell(0, 10, "DOCE DE FESTA - ORÇAMENTO DE LOCAÇÃO", ln=True, align="C")
+                pdf.cell(0, 10, limpa_texto("DOCE DE FESTA - ORÇAMENTO DE LOCAÇÃO"), ln=True, align="C")
                 pdf.set_font("Arial", "", 12)
-                pdf.cell(0, 10, f"Data: {data_hoje}", ln=True)
+                pdf.cell(0, 10, limpa_texto(f"Data: {data_hoje}"), ln=True)
                 pdf.ln(5)
 
-                pdf.cell(0, 10, f"Cliente: {cliente_info['nome']}", ln=True)
-                pdf.cell(0, 10, f"Telefone: {cliente_info['telefone']} | Email: {cliente_info['email']}", ln=True)
+                pdf.cell(0, 10, limpa_texto(f"Cliente: {cliente_info['nome']}"), ln=True)
+                pdf.cell(0, 10, limpa_texto(f"Telefone: {cliente_info['telefone']} | Email: {cliente_info['email']}"), ln=True)
                 pdf.ln(5)
 
                 pdf.set_font("Arial", "B", 12)
-                pdf.cell(0, 10, "Itens Selecionados:", ln=True)
+                pdf.cell(0, 10, limpa_texto("Itens Selecionados:"), ln=True)
                 pdf.set_font("Arial", "", 11)
 
                 for cat, nome, qtd, preco, subtotal in itens_orcamento:
-                    pdf.cell(0, 10, f"{cat} - {nome} | Qtd: {qtd} | R$: {preco:.2f} | Subtotal: R$ {subtotal:.2f}", ln=True)
+                    linha = f"{cat} - {nome} | Qtd: {qtd} | R$: {preco:.2f} | Subtotal: R$ {subtotal:.2f}"
+                    pdf.cell(0, 10, limpa_texto(linha), ln=True)
 
                 pdf.ln(5)
                 pdf.set_font("Arial", "B", 12)
-                pdf.cell(0, 10, f"Total: R$ {total:.2f}", ln=True)
-                pdf.cell(0, 10, f"Entrada (30%): R$ {total * 0.3:.2f}", ln=True)
+                pdf.cell(0, 10, limpa_texto(f"Total: R$ {total:.2f}"), ln=True)
+                pdf.cell(0, 10, limpa_texto(f"Entrada (30%): R$ {total * 0.3:.2f}"), ln=True)
 
                 pdf.ln(10)
                 pdf.set_font("Arial", "", 11)
-                pdf.multi_cell(0, 10,
-                               "📞 Contato: (48) 99846-6161\n"
-                               "🕗 Atendimento: Segunda a Sexta, das 8h às 17h (sem fechar ao meio-dia)\n"
-                               "💳 PIX: 09.266.448.0001/26")
+                info_contato = ("📞 Contato: (48) 99846-6161\n"
+                                "🕗 Atendimento: Segunda a Sexta, das 8h às 17h (sem fechar ao meio-dia)\n"
+                                "💳 PIX: 09.266.448.0001/26")
+                pdf.multi_cell(0, 10, limpa_texto(info_contato))
 
                 nome_arquivo = f"orcamento_{cliente_info['nome'].replace(' ', '_')}.pdf"
                 pdf.output(nome_arquivo)
