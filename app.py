@@ -33,12 +33,12 @@ if menu == "Cadastrar Cliente":
     st.subheader("📋 Cadastro de Cliente")
     nome = st.text_input("Nome completo")
     telefone = st.text_input("Telefone")
-    CPF = st.text_input("CPF")
+    email = st.text_input("E-mail")
 
     if st.button("Salvar Cliente"):
         if nome and telefone:
             df = carregar_dados(CLIENTES_CSV)
-            novo = pd.DataFrame([[nome, telefone, CPF]], columns=["nome", "telefone", "CPF"])
+            novo = pd.DataFrame([[nome, telefone, email]], columns=["nome", "telefone", "email"])
             df = pd.concat([df, novo], ignore_index=True)
             salvar_dados(df, CLIENTES_CSV)
             st.success("Cliente cadastrado com sucesso!")
@@ -115,15 +115,24 @@ elif menu == "Gerar Orçamento":
 
                 pdf.cell(0, 10, limpa_texto(f"Cliente: {cliente_info['nome']}"), ln=True)
                 pdf.cell(0, 10, limpa_texto(f"Telefone: {cliente_info['telefone']} | Email: {cliente_info['email']}"), ln=True)
-                pdf.ln(5)
+                pdf.ln(10)
 
+                # Cabeçalho da tabela
                 pdf.set_font("Arial", "B", 12)
-                pdf.cell(0, 10, limpa_texto("Itens Selecionados:"), ln=True)
-                pdf.set_font("Arial", "", 11)
+                pdf.cell(40, 10, "Categoria", 1, 0, "C")
+                pdf.cell(60, 10, "Nome", 1, 0, "C")
+                pdf.cell(20, 10, "Qtd", 1, 0, "C")
+                pdf.cell(30, 10, "Preço Unit.", 1, 0, "C")
+                pdf.cell(40, 10, "Subtotal", 1, 1, "C")
 
+                # Linhas da tabela
+                pdf.set_font("Arial", "", 11)
                 for cat, nome, qtd, preco, subtotal in itens_orcamento:
-                    linha = f"{cat} - {nome} | Qtd: {qtd} | R$: {preco:.2f} | Subtotal: R$ {subtotal:.2f}"
-                    pdf.cell(0, 10, limpa_texto(linha), ln=True)
+                    pdf.cell(40, 10, limpa_texto(cat), 1, 0, "C")
+                    pdf.cell(60, 10, limpa_texto(nome), 1, 0)
+                    pdf.cell(20, 10, str(qtd), 1, 0, "C")
+                    pdf.cell(30, 10, f"R$ {preco:.2f}", 1, 0, "R")
+                    pdf.cell(40, 10, f"R$ {subtotal:.2f}", 1, 1, "R")
 
                 pdf.ln(5)
                 pdf.set_font("Arial", "B", 12)
