@@ -38,7 +38,7 @@ if menu == "Cadastrar Cliente":
     if st.button("Salvar Cliente"):
         if nome and telefone:
             df = carregar_dados(CLIENTES_CSV)
-            novo = pd.DataFrame([[nome, telefone, CPF]], columns=["nome", "telefone", "CPF" "Email"  ])
+            novo = pd.DataFrame([[nome, telefone, CPF, Email]], columns=["nome", "telefone", "CPF"])
             df = pd.concat([df, novo], ignore_index=True)
             salvar_dados(df, CLIENTES_CSV)
             st.success("Cliente cadastrado com sucesso!")
