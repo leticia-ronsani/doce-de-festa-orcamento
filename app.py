@@ -34,6 +34,7 @@ if menu == "Cadastrar Cliente":
     nome = st.text_input("Nome completo")
     telefone = st.text_input("Telefone")
     CPF = st.text_input("CPF")
+    E-mail = st.text_input("E-mail")
 
     if st.button("Salvar Cliente"):
         if nome and telefone:
